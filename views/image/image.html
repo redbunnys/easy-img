@@ -1,0 +1,86 @@
+<link rel="stylesheet" href="/public/css/image.css">
+<div id="app" class="container">
+    <div class="upload-box">
+        <h2>图片上传</h2>
+        
+        <!-- 拖拽上传区域 -->
+        <div 
+            class="drop-zone" 
+            :class="{ dragover: isDragging }"
+            @dragenter.prevent="isDragging = true"
+            @dragover.prevent="isDragging = true"
+            @dragleave.prevent="isDragging = false"
+            @drop.prevent="handleDrop"
+            @click="triggerFileInput"
+        >
+            <div class="drop-zone-text">
+                <i class="upload-icon">📁</i>
+                <p>拖拽图片到这里 或 点击上传</p>
+                <p class="small">支持 jpg、png、gif 格式，单个文件最大 5MB</p>
+                <p class="small">支持截图后直接 Ctrl+V 粘贴上传</p>
+            </div>
+            <input 
+                type="file" 
+                ref="fileInput" 
+                @change="handleFiles" 
+                accept="image/*" 
+                multiple 
+                class="file-input" 
+            />
+        </div>
+
+        <!-- 上传预览区域 -->
+        <div class="preview-container">
+            <div v-for="preview in previews" :key="preview.id" class="preview-item" :class="preview.status">
+                <img :src="preview.url" />
+                <button class="remove-btn" @click="removePreview(preview.id)">×</button>
+                <div v-if="preview.status === 'success'" class="copy-options">
+                    <div class="copy-menu">
+                        <button @click="copyToClipboard(preview.fileUrl, 'url')" title="复制URL链接">
+                            <i class="copy-icon">🔗</i> URL
+                        </button>
+                        <button @click="copyToClipboard(preview.fileUrl, 'markdown')" title="复制Markdown格式">
+                            <i class="copy-icon">📝</i> MD
+                        </button>
+                        <button @click="copyToClipboard(preview.fileUrl, 'html')" title="复制HTML格式">
+                            <i class="copy-icon">📄</i> HTML
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 上传历史 -->
+        <div class="upload-history" v-if="history.length">
+            <h3>
+                最近上传
+                <button class="clear-history" @click="clearHistory" title="清除所有上传历史">
+                    <i class="delete-icon">🗑️</i>
+                    清除历史
+                </button>
+            </h3>
+            <div class="history-list">
+                <div v-for="item in history" :key="item.id" class="history-item">
+                    <img :src="item.url" title="点击查看复制选项"/>
+                    <button class="remove-btn" @click="deleteHistoryItem(item.id)">×</button>
+                    <div class="copy-options">
+                        <div class="copy-menu">
+                            <button @click="copyToClipboard(item.url, 'url')" title="复制URL链接">
+                                <i class="copy-icon">🔗</i> URL
+                            </button>
+                            <button @click="copyToClipboard(item.url, 'markdown')" title="复制Markdown格式">
+                                <i class="copy-icon">📝</i> MD
+                            </button>
+                            <button @click="copyToClipboard(item.url, 'html')" title="复制HTML格式">
+                                <i class="copy-icon">📄</i> HTML
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/public/js/image.js"></script>
+
